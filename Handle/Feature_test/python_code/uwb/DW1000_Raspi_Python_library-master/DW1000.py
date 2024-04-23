@@ -64,8 +64,8 @@ class DW1000(object):
         Args:
                 irq : The GPIO pin number managing interrupts.
         """
-        self._bus = 0
-        self._device = 0
+        self._bus = int(0)
+        self._device = int(0)
         self._rst = None
         self._irq = irq
 
@@ -78,12 +78,24 @@ class DW1000(object):
             self._bus = bus
         if device is not None:
             self._device = device
-        self.spi.open(self._bus, self._device)
+        
+        # KYR Before
+        #self.spi.open(self._bus, self._device)
+        # KYR After
+        self.spi.open(0, 0)
+
         # spi.max_speed_hz = 4000000
         self._deviceMode = C.IDLE_MODE
-        GPIO.setup(self._irq, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        
+        # KYR Before
+        #GPIO.setup(self._irq, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # KYR After
+        GPIO.setup(9, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        GPIO.add_event_detect(self._irq, GPIO.RISING, callback=self.handleInterrupt)
+        # KYR Before
+        #GPIO.add_event_detect(self._irq, GPIO.RISING, callback=self.handleInterrupt)
+        # KYR After
+        GPIO.add_event_detect(9, GPIO.RISING, callback=self.handleInterrupt)
 
         # Set reset pin for physical reset
         if rst is not None:

@@ -4,7 +4,7 @@ It requires the following modules: DW1000, DW1000Constants and monotonic.
 """
 
 
-import DW1000
+from DW1000 import DW1000
 import monotonic
 import DW1000Constants as C
 
@@ -24,6 +24,10 @@ timePollSentTS = 0
 timeRangeSentTS = 0
 timeComputedRangeTS = 0
 REPLY_DELAY_TIME_US = 7000 
+
+
+
+
 
 
 def millis():
@@ -172,11 +176,12 @@ def loop():
 
 
 
-try:    
-    PIN_IRQ = 19
-    PIN_SS = 16
-    DW1000.begin(PIN_IRQ)
-    DW1000.setup(PIN_SS)
+try: 
+    dw1000 = DW1000()
+    PIN_IRQ = 9 # kyr changed from 19(BCM) to 9(BCM) 
+    PIN_SS = 8 # kyr changed from 16(BCM) to 8(BCM)
+    dw1000.begin(PIN_IRQ)
+    dw1000.setup(PIN_SS)
     print("DW1000 initialized")
     print("############### ANCHOR ##############")
 
@@ -191,4 +196,4 @@ try:
         loop()
 
 except KeyboardInterrupt:
-    DW1000.close()
+    dw1000.close()
