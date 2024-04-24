@@ -2,6 +2,7 @@
 ## 1. locale 설정
 - locale이 UFT-8을 지원할 필요가 있다.
 - locale 명령어를 통해 UTF-8 지원을 확인하고, 지원하지 않는다면 변경해준다.
+
 ```(bash)
 locale  # check for UTF-8
 
