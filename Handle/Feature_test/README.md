@@ -12,7 +12,8 @@
     - 1.6. 부저
     - 1.7. 멀티 쓰레딩
 
-2. 미정
+### 2. UWB 질문
+
 
 
 
@@ -182,4 +183,45 @@ PIN: 없음
 
 
 예저코드2: task1을 수행하고 task2를 호출(join) 후 exit
+
+
+
+
+
+
+
+
+
+## UWB 질문
+
+현재 https://github.com/pedestrian0423/DW1000_Raspi_Python_library 에서 파이썬 라이브러리를 가져와서 라즈베리파이 4B 환경에서 테스트 중이다. 월요일부터 목요일까지 진행했으나 성공하지 못해서 모듈 개발자에게 질문을 할 내용을 작성하도록 하겠다.
+
+작성된 내용은 ISSUE로 질문하고,
+stack overflow에도 게시할 예정임.
+
+#### 현재까지의 진행
+<img src='./IMG_README/quest/01.PNG'>
+[사진 1]
+
+git clone을 완료하고 Example에 있는 예제 파일들을 "DW1000.py" 파일이 있는 디렉토리에 카피해옴.
+
+<img src="./IMG_README/quest/02.PNG">
+[사진 2]
+
+```shell
+python3 DW1000RangingAnchor.py
+```
+
+DW1000RangingAnchor.py를 실행함
+
+[사진 2]와 같이 "DW1000.py"에서 함수 print에 ()가 없었음
+
+<img src="./IMG_README/quest/03.PNG">
+[사진 3]
+
+
+<img src="./IMG_README/quest/04.PNG">
+[사진 4]
+
+[사진 3]의 Line:48과 [사진 4]의 Line:1263에서 ()가 없는 부분을
 
