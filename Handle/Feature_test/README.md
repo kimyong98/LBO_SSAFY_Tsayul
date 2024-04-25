@@ -41,7 +41,10 @@ Interface: SPI
 
 PIN: 
 
-비고:  
+비고: python Library로 진행중이나 막힘이 있음
+GPIO를 BCM으로(BOARD말고) 핀 세팅한건 SPI1.0 인데 코드는 SPI0.0을 기준으로 하고 있음.
+
+이 부분의 오류점이 있어서 좀 더 시도해 보아야함.
 
 
 ### 1.3. 서보모터(MG996R)
