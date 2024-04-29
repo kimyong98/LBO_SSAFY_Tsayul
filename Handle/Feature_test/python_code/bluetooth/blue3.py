@@ -1,6 +1,7 @@
 from bluetooth import *
+import threading
 
-def input_and_send():
+def input_and_send(sock):
     print("\nType something\n")
     while True:
         data = input()
@@ -8,14 +9,23 @@ def input_and_send():
         sock.send(data)
         sock.send("\n")
         
-def rx_and_echo():
-    sock.send("\nsend anything\n")
+def rx_and_echo(sock):
+    #sock.send("\nsend anything\n")
     while True:
         data = sock.recv(buf_size)
         if data:
-            print(data)
-            sock.send(data)
-            
+            print(data.decode('utf-8'))
+     
+def bluetooth_communication(sock):
+    input_thread = threading.Thread(target=input_and_send, args=(sock,))
+    rx_thread = threading.Thread(target=rx_and_echo, args=(sock,))
+    
+    input_thread.start()
+    rx_thread.start()
+
+    input_thread.join()
+    rx_thread.join()
+
 #MAC address of ESP32
 addr = "08:D1:F9:D7:94:8A"
 #uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
@@ -46,8 +56,11 @@ sock.connect((host, port))
 
 print("connected")
 
-input_and_send()
+#input_and_send()
 #rx_and_echo()
+
+bluetooth_communication(sock)
+
 
 sock.close()
 print("\n--- bye ---\n")
