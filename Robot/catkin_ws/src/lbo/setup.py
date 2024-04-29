@@ -21,6 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'odom = lbo.odom:main',
+            'make_map = lbo.make_map:main',
+            'tt = lbo.tt:main',
         ],
     },
 )
