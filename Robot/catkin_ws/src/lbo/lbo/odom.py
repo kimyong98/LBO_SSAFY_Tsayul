@@ -60,23 +60,12 @@ class odom(Node):
     def imu_callback(self,msg):
         # 로직 3. IMU 에서 받은 quaternion을 euler angle로 변환해서 사용
         self.imu_msg = msg
-        
-        imu_q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
-        _, _, yaw = imu_q.to_euler()
 
         if not self.is_imu:
+            imu_q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
+            _, _, yaw = imu_q.to_euler()
             self.is_imu = True
-            self.imu_offset = yaw
-            self.prev_time=rclpy.clock.Clock().now()
-        else:
-            # 현재 theta 계산 시, imu_offset을 빼서 초기 방향 대비 회전한 양을 계산
-            self.theta = yaw - self.imu_offset
-
-            # theta 범위 조정 (-pi ~ pi)
-            if self.theta > pi:
-                self.theta -= 2 * pi
-            elif self.theta < -pi:
-                self.theta += 2 * pi
+            self.theta = yaw
 
 
     def joint_callback(self, msg):

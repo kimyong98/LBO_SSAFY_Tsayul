@@ -8,6 +8,7 @@ from squaternion import Quaternion
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point32
 from sensor_msgs.msg import LaserScan,PointCloud
+from math import pi
 
 class tt(Node):
 
@@ -22,16 +23,22 @@ class tt(Node):
         self.subscription = self.create_subscription(LaserScan,
         '/scan',self.scan_callback, qos)
         self.tt_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+        self.imu_sub = self.create_subscription(Imu, '/imu', self.imu_callback, 10)
 
         self.is_odom = 0
         
     def scan_callback(self, msg):
+        return
         print('good')
 
     def odom_callback(self, msg):
-        if self.is_odom < 3:
-            self.is_odom += 1
-            print('oooooodddddddoooooooommmm')
+        return
+    
+    def imu_callback(self, msg):
+        imu_q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
+        _, _, yaw = imu_q.to_euler()
+        print(yaw*180/pi)
+
         
 def main(args=None):
     rclpy.init(args=args)

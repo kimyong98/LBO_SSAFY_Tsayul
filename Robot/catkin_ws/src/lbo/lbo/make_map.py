@@ -151,8 +151,7 @@ class Mapper(Node):
             depth=10,
         )
         
-        self.subscription = self.create_subscription(LaserScan,
-        '/scan',self.scan_callback, qos)
+        self.subscription = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos)
         self.map_pub = self.create_publisher(OccupancyGrid, '/map', 1)
 
         self.is_status = False
@@ -228,9 +227,14 @@ class Mapper(Node):
 def main(args=None):    
     rclpy.init(args=args)
     run_mapping = Mapper()
-    rclpy.spin(run_mapping)
-    run_mapping.destroy_node()
-    rclpy.shutdown()
+    
+    try :
+        rclpy.spin(run_mapping)
+        run_mapping.destroy_node()
+        rclpy.shutdown()
+
+    except :
+        run_mapping.save_map()
 
 
 if __name__ == '__main__':

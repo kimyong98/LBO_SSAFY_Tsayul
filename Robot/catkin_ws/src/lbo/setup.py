@@ -23,6 +23,8 @@ setup(
             'odom = lbo.odom:main',
             'make_map = lbo.make_map:main',
             'tt = lbo.tt:main',
+            'lidar = lbo.lidar_test:main',
+            'blue = lbo.bluetooth:main',
         ],
     },
 )
