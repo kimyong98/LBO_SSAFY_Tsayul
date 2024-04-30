@@ -51,11 +51,11 @@
  *  - use enum instead of define
  *  - move strings to flash (less RAM consumption)
  */
-
+#include "TwoWayRangingResponder.h"
 #include <DW1000Ng.hpp>
 #include <DW1000NgUtils.hpp>
 #include <DW1000NgRanging.hpp>
-
+#include "Arduino.h"
 // connection pins
 const uint8_t PIN_SCK = 18;
 const uint8_t PIN_MOSI = 23;
@@ -125,7 +125,18 @@ interrupt_configuration_t DEFAULT_INTERRUPT_CONFIG = {
     true
 };
 
-void setup() {
+void noteActivity();
+void resetInactive();
+void handleSent();
+void handleReceived();
+void transmitPollAck();
+void transmitRangeReport(float);
+void transmitRangeFailed();
+void receiver();
+
+
+
+void Uwb_setup() {
     // DEBUG monitoring
     Serial.begin(115200);
     Serial.println("Serial Start");
@@ -136,10 +147,10 @@ void setup() {
     Serial.println(F("DW1000Ng initialized ..."));
     // general configuration
     DW1000Ng::applyConfiguration(DEFAULT_CONFIG);
-	DW1000Ng::applyInterruptConfiguration(DEFAULT_INTERRUPT_CONFIG);
+    DW1000Ng::applyInterruptConfiguration(DEFAULT_INTERRUPT_CONFIG);
 
     DW1000Ng::setDeviceAddress(1);
-	
+    
     DW1000Ng::setAntennaDelay(16436);
     
     Serial.println(F("Committed configuration ..."));
@@ -212,14 +223,15 @@ void receiver() {
     DW1000Ng::startReceive();
 }
 
-void loop() {
+double Uwb_loop() {
+  double distance = 0.5;
     int32_t curMillis = millis();
     if (!sentAck && !receivedAck) {
         // check if inactive
         if (curMillis - lastActivity > resetPeriod) {
             resetInactive();
         }
-        return;
+        return 0.1;
     }
     // continue on any success confirmation
     if (sentAck) {
@@ -251,12 +263,13 @@ void loop() {
         else if (msgId == RANGE) {
             timeRangeReceived = DW1000Ng::getReceiveTimestamp();
             expectedMsgId = POLL;
+            Serial.println(protocolFailed);
             if (!protocolFailed) {
                 timePollSent = DW1000NgUtils::bytesAsValue(data + 1, LENGTH_TIMESTAMP);
                 timePollAckReceived = DW1000NgUtils::bytesAsValue(data + 6, LENGTH_TIMESTAMP);
                 timeRangeSent = DW1000NgUtils::bytesAsValue(data + 11, LENGTH_TIMESTAMP);
                 // (re-)compute range as two-way ranging is done
-                double distance = DW1000NgRanging::computeRangeAsymmetric(timePollSent,
+                distance = DW1000NgRanging::computeRangeAsymmetric(timePollSent,
                                                             timePollReceived, 
                                                             timePollAckSent, 
                                                             timePollAckReceived, 
@@ -273,10 +286,10 @@ void loop() {
                   if (!payProcessing) {
                     Serial.println("payProcessing...");
                     payProcessing = true;
-                    return;
+                    return 0.2;
                   }
                   else
-                    return;
+                    return 0.3;
                 }
                 if (distance > 1 && payRequest == true) {
                   payRequest = false;
@@ -306,5 +319,9 @@ void loop() {
             noteActivity();
         }
     }
-}
+    else {
+      Serial.println("TTTTT");
+    }
 
+  return distance;
+}

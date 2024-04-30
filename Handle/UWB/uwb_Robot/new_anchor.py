@@ -188,7 +188,7 @@ try:
     print("DW1000 initialized")
     print("############### ANCHOR ##############")
 
-    dw1000.generalConfiguration("82:17:5B:D5:A9:9A:E2:9C", C.MODE_LONGDATA_RANGE_ACCURACY)
+    dw1000.generalConfiguration("82:17:5B:D5:A9:9A:E2:9C", [C.TRX_RATE_6800KBPS, C.TX_PULSE_FREQ_16MHZ, C.TX_PREAMBLE_LEN_64])
     dw1000.registerCallback("handleSent", handleSent)
     dw1000.registerCallback("handleReceived", handleReceived)
     dw1000.setAntennaDelay(C.ANTENNA_DELAY_RASPI)
@@ -200,4 +200,5 @@ try:
 
 except KeyboardInterrupt:
     dw1000.close()
+
 

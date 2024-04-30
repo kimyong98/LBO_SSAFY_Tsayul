@@ -1332,8 +1332,10 @@ class DW1000(object):
 
         if self._operationMode[C.DATA_RATE_BIT] == C.TRX_RATE_110KBPS:
             dr = C.DATA_RATE_110
+        elif self._operationMode[C.DATA_RATE_BIT] == C.TRX_RATE_850KBPS:
+            dr = 850
         else:
-            dr = C.DATA_RATE_0
+            dr = 6800
 
         ch = self._operationMode[C.CHANNEL_BIT]
         pcode = self._operationMode[C.PREAMBLE_CODE_BIT]
@@ -1541,6 +1543,7 @@ class DW1000(object):
         self.spi.close()
         GPIO.cleanup()
         print("\n Close SPI")
+
 
 
 

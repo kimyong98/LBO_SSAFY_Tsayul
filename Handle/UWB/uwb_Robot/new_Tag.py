@@ -108,6 +108,7 @@ def transmitRange():
     dw1000.setTimeStamp(data, timePollAckReceivedTS, 6)
     dw1000.setTimeStamp(data, timeRangeSentTS, 11)
     dw1000.setData(data, LEN_DATA)
+    print(data[0])
     dw1000.startTransmit()
 
 
@@ -120,7 +121,7 @@ def loop():
 
     if sentAck:
         sentAck = False
-        msgID = data[0]      
+        msgID = data[0]
         if msgID == C.POLL:
             print("sent POLL")
             timePollSentTS = dw1000.getTransmitTimestamp()
@@ -131,7 +132,7 @@ def loop():
     if receivedAck:
         receivedAck = False
         data = dw1000.getData(LEN_DATA)
-        msgID = data[0]    
+        msgID = data[0]
         if msgID != expectedMsgId:
             expectedMsgId = C.POLL_ACK
             transmitPoll()
@@ -159,7 +160,7 @@ try:
     print("DW1000 initialized")
     print("############### TAG ##############")	
 
-    dw1000.generalConfiguration("7D:00:22:EA:82:60:3B:9C", C.MODE_LONGDATA_RANGE_ACCURACY)
+    dw1000.generalConfiguration("7D:00:22:EA:82:60:3B:9C", [C.TRX_RATE_6800KBPS, C.TX_PULSE_FREQ_16MHZ, C.TX_PREAMBLE_LEN_64])
     dw1000.registerCallback("handleSent", handleSent)
     dw1000.registerCallback("handleReceived", handleReceived)
     dw1000.setAntennaDelay(C.ANTENNA_DELAY_RASPI)
@@ -172,3 +173,4 @@ try:
 
 except KeyboardInterrupt:
     dw1000.close()
+
