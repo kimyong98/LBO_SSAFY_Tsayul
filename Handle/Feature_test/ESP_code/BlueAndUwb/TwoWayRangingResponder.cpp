@@ -1,3 +1,4 @@
+
 /*
  * MIT License
  * 
@@ -147,10 +148,10 @@ void Uwb_setup() {
     Serial.println(F("DW1000Ng initialized ..."));
     // general configuration
     DW1000Ng::applyConfiguration(DEFAULT_CONFIG);
-	DW1000Ng::applyInterruptConfiguration(DEFAULT_INTERRUPT_CONFIG);
+    DW1000Ng::applyInterruptConfiguration(DEFAULT_INTERRUPT_CONFIG);
 
     DW1000Ng::setDeviceAddress(1);
-	
+    
     DW1000Ng::setAntennaDelay(16436);
     
     Serial.println(F("Committed configuration ..."));
@@ -213,6 +214,7 @@ void transmitRangeReport(float curRange) {
 
 void transmitRangeFailed() {
     data[0] = RANGE_FAILED;
+    Serial.println("Protocol Failed!!");
     DW1000Ng::setTransmitData(data, LEN_DATA);
     DW1000Ng::startTransmit();
 }
@@ -224,7 +226,7 @@ void receiver() {
 }
 
 double Uwb_loop() {
-  double distance = 0.5;
+  double distance = 0.1;
     int32_t curMillis = millis();
     if (!sentAck && !receivedAck) {
         // check if inactive
@@ -248,6 +250,7 @@ double Uwb_loop() {
         // get message and parse
         DW1000Ng::getReceivedData(data, LEN_DATA);
         byte msgId = data[0];
+        Serial.print("NOW ID : ");
         Serial.println(msgId);
         if (msgId != expectedMsgId) {
             // unexpected message, start over again (except if already POLL)
@@ -258,14 +261,12 @@ double Uwb_loop() {
             protocolFailed = false;
             timePollReceived = DW1000Ng::getReceiveTimestamp();
             expectedMsgId = RANGE;
-            Serial.println("Ack!!");
             transmitPollAck();
             noteActivity();
         }
         else if (msgId == RANGE) {
             timeRangeReceived = DW1000Ng::getReceiveTimestamp();
             expectedMsgId = POLL;
-            Serial.println(protocolFailed);
             if (!protocolFailed) {
                 timePollSent = DW1000NgUtils::bytesAsValue(data + 1, LENGTH_TIMESTAMP);
                 timePollAckReceived = DW1000NgUtils::bytesAsValue(data + 6, LENGTH_TIMESTAMP);
@@ -288,10 +289,10 @@ double Uwb_loop() {
                   if (!payProcessing) {
                     Serial.println("payProcessing...");
                     payProcessing = true;
-                    return 0.2;
+                    return 0.1;
                   }
                   else
-                    return 0.3;
+                    return 0.1;
                 }
                 if (distance > 1 && payRequest == true) {
                   payRequest = false;
@@ -321,10 +322,6 @@ double Uwb_loop() {
             noteActivity();
         }
     }
-    else {
-      Serial.println("TTTTT");
-    }
 
   return distance;
 }
-

@@ -5,10 +5,10 @@
 void TaskUWB(void *param) {
   for(;;) {
     double ret = Uwb_loop();
+    if(ret != 0.1)
+      Serial.println(ret);
 
-    Serial.println(ret);
-
-    vTaskDelay(1000);
+    vTaskDelay(1);
   }
 }
 
