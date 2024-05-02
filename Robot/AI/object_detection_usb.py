@@ -4,11 +4,13 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from utils.camera import Cam
+from utils.camera import Cam, CONST_LIST_CAMERA
 
 '''
 reference: https://github.com/e96031413/TensorFlow-Lite-Object-Detection-and-Image-Classification-on-Jetson-Nano
 '''
+
+CONST_FLOAT_FREQ = cv2.getTickFrequency()
 
 def load_labels(path):
     with open(path, 'r') as f:
@@ -34,6 +36,10 @@ def classify_image(interpreter, image, top_k=1):
     ordered = np.argpartition(-output, top_k)
     return [(i, output[i]) for i in ordered[:top_k]]
 
+def calculate_inference_time(init_time):
+    now = cv2.getTickCount()
+    return (now - init_time)/CONST_FLOAT_FREQ
+
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
@@ -48,6 +54,7 @@ parser.add_argument('--resolution', help='Desired webcam resolution in WxH. If t
                     default='1280x720')
 parser.add_argument('--model', help='File path of .tflite file.', default="models/detect.tflite")
 parser.add_argument('--labels_', help='File path of labels file.', default="models/labelmap.txt")
+parser.add_argument('--type', choices=CONST_LIST_CAMERA, help='File path of labels file.', default="usb")
 
 args = parser.parse_args()
 
@@ -56,11 +63,11 @@ print("check tensorflow devices")
 print(tf.config.list_physical_devices())
 print("===========================================")
 print("Set GPU")
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+tf.config.list_physical_devices('GPU')
 print("===========================================")
 print(tf.test.is_gpu_available())
 print("===========================================")
-
 
 labels_ = load_labels(args.labels_)
 interpreter_ = tf.lite.Interpreter(args.model)
@@ -113,7 +120,7 @@ frame_rate_calc = 1
 freq = cv2.getTickFrequency()
 
 # Initialize video stream
-cap = Cam(0, "usb")
+cap = Cam(0, "webcam")
 
 if cap.cap.isOpened():
     window_handle = cv2.namedWindow("Object detector", cv2.WINDOW_AUTOSIZE)
@@ -165,7 +172,8 @@ if cap.cap.isOpened():
                 cv2.putText(cap.frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
                 # Draw framerate in corner of frame
-                cv2.putText(cap.frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
+                # cv2.putText(cap.frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
+        cv2.putText(cap.frame,'infer_time: {0:2.2f}'.format(calculate_inference_time(t1)),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
         # All the results have been drawn on the frame, so it's time to display it.
         cv2.imshow('Object detector', cap.frame)
@@ -173,3 +181,4 @@ if cap.cap.isOpened():
         # Press 'q' to quit
         if cv2.waitKey(1) == ord('q'):
             cap.close_camera()
+            break

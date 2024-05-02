@@ -18,12 +18,12 @@ class Cam():
 
         self.camera_id = camera_id
         self.cap = ''
-        self.window_title = ''
+        self.window_title = type
         self.frame = ''
 
-        if type == CONST_STR_CSI:
+        if self.window_title == CONST_STR_CSI:
             self.set_csi_camera()
-        elif type == CONST_STR_USB:
+        elif self.window_title == CONST_STR_USB:
             self.set_usb_camera()
         else:
             self.set_web_camera()
