@@ -111,9 +111,9 @@ device_configuration_t DEFAULT_CONFIG = {
     false,
     SFDMode::STANDARD_SFD,
     Channel::CHANNEL_5,
-    DataRate::RATE_6800KBPS,
+    DataRate::RATE_110KBPS,
     PulseFrequency::FREQ_16MHZ,
-    PreambleLength::LEN_64,
+    PreambleLength::LEN_256,
     PreambleCode::CODE_4
 };
 
@@ -213,6 +213,7 @@ void transmitRangeReport(float curRange) {
 
 void transmitRangeFailed() {
     data[0] = RANGE_FAILED;
+    // Serial.println("Protocol Failed!!");
     DW1000Ng::setTransmitData(data, LEN_DATA);
     DW1000Ng::startTransmit();
 }
@@ -248,6 +249,7 @@ double Uwb_loop() {
         // get message and parse
         DW1000Ng::getReceivedData(data, LEN_DATA);
         byte msgId = data[0];
+        // Serial.println("NOW ID : ", msgId);
         if (msgId != expectedMsgId) {
             // unexpected message, start over again (except if already POLL)
             protocolFailed = true;
@@ -263,11 +265,23 @@ double Uwb_loop() {
         else if (msgId == RANGE) {
             timeRangeReceived = DW1000Ng::getReceiveTimestamp();
             expectedMsgId = POLL;
-            Serial.println(protocolFailed);
             if (!protocolFailed) {
                 timePollSent = DW1000NgUtils::bytesAsValue(data + 1, LENGTH_TIMESTAMP);
                 timePollAckReceived = DW1000NgUtils::bytesAsValue(data + 6, LENGTH_TIMESTAMP);
                 timeRangeSent = DW1000NgUtils::bytesAsValue(data + 11, LENGTH_TIMESTAMP);
+                Serial.print(timePollSent);
+                Serial.print(", ");
+                Serial.print(timePollReceived);
+                Serial.print(", ");
+                Serial.print(timePollAckSent);
+                Serial.print(", ");
+                Serial.print(timePollAckReceived);
+                Serial.print(", ");
+                Serial.print(timeRangeSent);
+                Serial.print(", ");
+                Serial.println(timeRangeReceived);
+                
+
                 // (re-)compute range as two-way ranging is done
                 distance = DW1000NgRanging::computeRangeAsymmetric(timePollSent,
                                                             timePollReceived, 
@@ -277,24 +291,6 @@ double Uwb_loop() {
                                                             timeRangeReceived);
                 /* Apply simple bias correction */
                 distance = DW1000NgRanging::correctRange(distance);
-
-                if (distance <= 0.1 && payRequest == false) {
-                  payRequest = true;
-                  Serial.println("Successfully payRequest");
-                }
-                if (distance <= 1 && payRequest == true) {
-                  if (!payProcessing) {
-                    Serial.println("payProcessing...");
-                    payProcessing = true;
-                    return 0.2;
-                  }
-                  else
-                    return 0.3;
-                }
-                if (distance > 1 && payRequest == true) {
-                  payRequest = false;
-                  payProcessing = false;
-                }
                 
                 String rangeString = "Range: "; rangeString += distance; rangeString += " m";
                 rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
@@ -318,9 +314,6 @@ double Uwb_loop() {
 
             noteActivity();
         }
-    }
-    else {
-      Serial.println("TTTTT");
     }
 
   return distance;

@@ -16,7 +16,7 @@ event_add_cnt = 0
 
 class DW1000(object):
     spi = spidev.SpiDev()
-    print(spi)
+    # print(spi)
     _bus = 0
     _device = 0
     _ss = 0
@@ -49,7 +49,7 @@ class DW1000(object):
             self.__dict__[key] = kwargs.get(key)
 
         # self.spi = spidev.SpiDev()
-        print (self.spi)
+        print(self.spi)
         
         self.begin(self.irq, self.rst, self.bus, self.device)
 
@@ -94,14 +94,14 @@ class DW1000(object):
         if event_add_cnt == 0:
             GPIO.add_event_detect(self._irq, GPIO.RISING, callback=self.handleInterrupt)
             
-            print("handleInterrupt Ready ", self._irq)
+            # print("handleInterrupt Ready ", self._irq)
             event_add_cnt = 1
 
         # Set reset pin for physical reset
         if rst is None:
             self._rst = 23
             GPIO.setup(self._rst, GPIO.IN)
-            print("Reset Ready ", self._rst)
+            # print("Reset Ready ", self._rst)
             
             
             
@@ -211,7 +211,7 @@ class DW1000(object):
         """
         This function performs a hard reset on the DW1000 chip.
         """
-        print(self._rst)
+        # print(self._rst)
         GPIO.setup(self._rst, GPIO.OUT)
         GPIO.output(self._rst, GPIO.LOW)
         time.sleep(0.002)
@@ -304,9 +304,9 @@ class DW1000(object):
             self.setBit(self._chanctrl, 4, C.TNSSFD_BIT, False)
             self.setBit(self._chanctrl, 4, C.RNSSFD_BIT, False)
         else:
-            self.setBit(self._chanctrl, 4, C.DWSFD_BIT, True)
-            self.setBit(self._chanctrl, 4, C.TNSSFD_BIT, True)
-            self.setBit(self._chanctrl, 4, C.RNSSFD_BIT, True)
+            self.setBit(self._chanctrl, 4, C.DWSFD_BIT, False)
+            self.setBit(self._chanctrl, 4, C.TNSSFD_BIT, False)
+            self.setBit(self._chanctrl, 4, C.RNSSFD_BIT, False)
         if rate == C.TRX_RATE_850KBPS:
             sfdLength = [C.SFD_LENGTH_850KBPS]
         elif rate == C.TRX_RATE_6800KBPS:
@@ -1279,7 +1279,7 @@ class DW1000(object):
         data = [0] * datalength
         time.sleep(0.000005)
         data = self.readBytes(C.RX_BUFFER, C.NO_SUB, data, datalength)
-        print ("DW1000.py 1263:\t ", data)
+        # print ("DW1000.py 1263:\t ", data)
         return data
 
 
