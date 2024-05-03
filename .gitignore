@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # python
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -194,3 +195,9 @@ cython_debug/
 *.exe
 *.out
 *.app
+=======
+/prac
+Robot/catkin_ws/build/
+Robot/catkin_ws/install/
+Robot/catkin_ws/log/
+>>>>>>> origin/S10P31A408-110
