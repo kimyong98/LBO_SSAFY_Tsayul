@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> camera
 # python
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -194,6 +197,7 @@ cython_debug/
 # Executables
 *.exe
 *.out
+<<<<<<< HEAD
 *.app
 =======
 /prac
@@ -201,3 +205,6 @@ Robot/catkin_ws/build/
 Robot/catkin_ws/install/
 Robot/catkin_ws/log/
 >>>>>>> origin/S10P31A408-110
+=======
+*.app
+>>>>>>> camera
