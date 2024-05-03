@@ -24,6 +24,8 @@ class tt(Node):
         '/scan',self.scan_callback, qos)
         self.tt_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.imu_sub = self.create_subscription(Imu, '/imu', self.imu_callback, 10)
+        self.test_pub = self.create_publisher(String, '/test', 10)
+        self.timer = self.create_timer(1, self.timer_callback)
 
         self.is_odom = 0
         
@@ -39,6 +41,10 @@ class tt(Node):
         _, _, yaw = imu_q.to_euler()
         print(yaw*180/pi)
 
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'tt'
+        self.test_pub.publish(msg)
         
 def main(args=None):
     rclpy.init(args=args)
