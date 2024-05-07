@@ -25,13 +25,25 @@ char Tx_Que[QUEUE_MAX_SIZE];
 volatile uint16_t Tx_rear = 0U;
 volatile uint16_t Tx_front = 0U;
 
-
+// Tx
 const int _name = 1;
-String _time;
-double uwb;
-float imu_x, imu_y, imu_z, imu_w;
+String _time = "";
+double uwb = 0.0;
+float gyro_x = 0.0, gyro_y = 0.0, gyro_z = 0.0, gyro_w = 0.0;
+float acc_x = 0.0, acc_y = 0.0, acc_z = 0.0;
 // float gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, mag_x, mag_y, mag_z;
-int button;
+int button = 0;
+
+
+
+
+// Rx
+int rx_name = 0;
+String rx_time = "";
+int rx_servo = 0;
+int rx_beep = 0;
+
+
 
 
 
@@ -57,6 +69,8 @@ JsonDocument makeJson() {
   JsonDocument info;
   JsonDocument data;
   JsonDocument imu;
+  JsonDocument gyro;
+  JsonDocument acc;
 
   info["name"] = _name;
   info["time"] = _time;
@@ -65,12 +79,20 @@ JsonDocument makeJson() {
 
   data["uwb"] = uwb;
   
-  imu["x"] = imu_x;
-  imu["y"] = imu_y;
-  imu["z"] = imu_z;
-  imu["w"] = imu_w;
+  gyro["x"] = gyro_x;
+  gyro["y"] = gyro_y;
+  gyro["z"] = gyro_z;
+  gyro["w"] = gyro_w;
 
+  acc["x"] = acc_x;
+  acc["y"] = acc_y;
+  acc["z"] = acc_z;
+  
+  imu["gyro"] = gyro;
+  imu["acc"] = acc;
+  
   data["imu"] = imu;
+
 
   data["button"] = button;
 
@@ -120,25 +142,26 @@ void Task_Print_Rx_Queue(void *pvParameters) {
         deserializeJson(Rx_doc, str);
 
 
-        int name = Rx_doc["info"]["name"];
-        String time = Rx_doc["info"]["time"];
-        
-        int servo = Rx_doc["data"]["servo"];
-        int beep = Rx_doc["data"]["beep"];
+        rx_name = Rx_doc["info"]["name"];
+        String str_Temp = Rx_doc["info"]["time"];
+        rx_time = str_Temp;
+
+        rx_servo = Rx_doc["data"]["servo"];
+        rx_beep = Rx_doc["data"]["beep"];
 
         Serial.println("New");
 
         Serial.print("name: ");
-        Serial.println(name);
+        Serial.println(rx_name);
 
         Serial.print("time: ");
-        Serial.println(time);
+        Serial.println(rx_time);
 
         Serial.print("servo: ");
-        Serial.println(servo);
+        Serial.println(rx_servo);
 
         Serial.print("beep: ");
-        Serial.println(beep);
+        Serial.println(rx_beep);
 
         Serial.println("Original String: " + str);
 
@@ -179,10 +202,14 @@ void Task_Send_Tx_Data(void *params) {
 
         uwb = 0.1 + goorooroo;
 
-        imu_x = goorooroo + 1.5;
-        imu_y = goorooroo + 2.5;
-        imu_z = goorooroo + 3.5;
-        imu_w = goorooroo + 4.5;
+        gyro_x = goorooroo + 1.5;
+        gyro_y = goorooroo + 2.5;
+        gyro_z = goorooroo + 3.5;
+        gyro_w = goorooroo + 4.5;
+        
+        acc_x = goorooroo + 5.5;
+        acc_y = goorooroo + 6.5;
+        acc_z = goorooroo + 7.5;
         
 
         button = goorooroo * 2;        
@@ -253,7 +280,7 @@ void blooth_lib_setup() {
   // attachInterrupt(digitalPinToInterrupt(1), rxInterrupt, RISING);
   SerialBT.register_callback(rxInterrupt);
 
-  xTaskCreate(Task_Print_Rx_Queue, "Task_Print_Message_Queue", 2048, NULL, 4, NULL);
+  xTaskCreate(Task_Print_Rx_Queue, "Task_Print_Message_Queue", 4096, NULL, 2, NULL);
   xTaskCreate(Task_Send_Tx_Data, "Task_Send_Tx_Data", 4096, NULL, 2, NULL);
 
   Serial.println("End of blue tooth Init");

@@ -11,6 +11,7 @@ void rxInterrupt(esp_spp_cb_event_t event, esp_spp_cb_param_t *param);
 void blooth_lib_setup();
 
 
-
+extern int rx_servo;
+extern int rx_beep;
 
 #endif

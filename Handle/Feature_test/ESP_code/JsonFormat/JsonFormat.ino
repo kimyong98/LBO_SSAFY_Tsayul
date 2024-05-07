@@ -98,7 +98,29 @@ void setup() {
 
   String retString;
   serializeJson(doc3, retString);
-  println(retString);
+  Serial.println(retString);
+
+
+
+  Serial.println("");
+  Serial.println("");
+  Serial.println("");
+
+
+  Serial.println("5. Json Array");
+  JsonDocument doc4;
+  doc4["kkk"] = "kkk is IS";
+
+  JsonDocument doc_temp;
+  deserializeJson(doc_temp, "[2, 6, 9]");
+  JsonArray array = doc_temp.as<JsonArray>();
+
+  doc4["arr"] = array;
+
+  String arrString;
+  serializeJson(doc4, arrString);
+  Serial.println(arrString);
+  
 }
 
 void loop() {

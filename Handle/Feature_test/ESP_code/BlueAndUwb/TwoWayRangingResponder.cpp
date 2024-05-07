@@ -112,9 +112,9 @@ device_configuration_t DEFAULT_CONFIG = {
     false,
     SFDMode::STANDARD_SFD,
     Channel::CHANNEL_5,
-    DataRate::RATE_6800KBPS,
+    DataRate::RATE_110KBPS,
     PulseFrequency::FREQ_16MHZ,
-    PreambleLength::LEN_64,
+    PreambleLength::LEN_256,
     PreambleCode::CODE_4
 };
 
