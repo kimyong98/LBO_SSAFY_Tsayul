@@ -2,6 +2,7 @@ import os
 import rclpy
 import json
 from std_msgs.msg import Int64
+import playsound
 
 CONST_PATH_JSON = "/home/jetson/turtlebot3_ws/src/lbo/lbo/tts_dict.json"
 CONST_PATH_OUTPUT = "/home/jetson/turtlebot3_ws/src/lbo/lbo/sounds"
@@ -25,7 +26,7 @@ def tts_callback(msg):
         if not os.path.exists(file_path):
             return None
 
-        os.system(f"ffplay {file_path} -autoexit")
+        playsound.playsound(file_path)
 
 def main():
 	global meta_dict
